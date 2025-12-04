@@ -1,0 +1,156 @@
+"use client"
+
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+
+const styles = StyleSheet.create({
+    page: {
+        flexDirection: 'column',
+        backgroundColor: '#FFFFFF',
+        padding: 30,
+    },
+    header: {
+        marginBottom: 20,
+        borderBottomWidth: 2,
+        borderBottomColor: '#111827',
+        paddingBottom: 10,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#111827',
+    },
+    subtitle: {
+        fontSize: 12,
+        color: '#6B7280',
+        marginTop: 5,
+    },
+    section: {
+        margin: 10,
+        padding: 10,
+        flexGrow: 1,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: '#374151',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
+        paddingBottom: 5,
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 5,
+    },
+    label: {
+        fontSize: 12,
+        color: '#4B5563',
+    },
+    value: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#111827',
+    },
+    pnlPositive: {
+        color: '#059669',
+    },
+    pnlNegative: {
+        color: '#DC2626',
+    },
+    footer: {
+        position: 'absolute',
+        bottom: 30,
+        left: 30,
+        right: 30,
+        textAlign: 'center',
+        color: '#9CA3AF',
+        fontSize: 10,
+    }
+});
+
+interface FlashReportProps {
+    date: string;
+    pnlData: {
+        delta: number;
+        newDeal: number;
+        unexplained: number;
+        total: number;
+    };
+    positionData: {
+        commodity: string;
+        netVolume: number;
+        status: string;
+    }[];
+    arbData: {
+        isOpen: boolean;
+        margin: number;
+    };
+}
+
+export const FlashReportPDF = ({ date, pnlData, positionData, arbData }: FlashReportProps) => (
+    <Document>
+        <Page size="A4" style={styles.page}>
+            <View style={styles.header}>
+                <Text style={styles.title}>Daily Commercial Flash Report</Text>
+                <Text style={styles.subtitle}>{date}</Text>
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>1. P&L Attribution</Text>
+                <View style={styles.row}>
+                    <Text style={styles.label}>Delta (Market):</Text>
+                    <Text style={[styles.value, pnlData.delta >= 0 ? styles.pnlPositive : styles.pnlNegative]}>
+                        ${pnlData.delta.toLocaleString()}
+                    </Text>
+                </View>
+                <View style={styles.row}>
+                    <Text style={styles.label}>New Deal (Skill):</Text>
+                    <Text style={[styles.value, pnlData.newDeal >= 0 ? styles.pnlPositive : styles.pnlNegative]}>
+                        ${pnlData.newDeal.toLocaleString()}
+                    </Text>
+                </View>
+                <View style={styles.row}>
+                    <Text style={styles.label}>Unexplained:</Text>
+                    <Text style={styles.value}>${pnlData.unexplained.toLocaleString()}</Text>
+                </View>
+                <View style={[styles.row, { marginTop: 10, borderTopWidth: 1, borderTopColor: '#E5E7EB', paddingTop: 5 }]}>
+                    <Text style={[styles.label, { fontWeight: 'bold' }]}>Total P&L:</Text>
+                    <Text style={[styles.value, pnlData.total >= 0 ? styles.pnlPositive : styles.pnlNegative]}>
+                        ${pnlData.total.toLocaleString()}
+                    </Text>
+                </View>
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>2. Net Position Exposure</Text>
+                {positionData.map((pos, index) => (
+                    <View key={index} style={styles.row}>
+                        <Text style={styles.label}>{pos.commodity}:</Text>
+                        <Text style={styles.value}>
+                            {pos.netVolume.toLocaleString()} ({pos.status})
+                        </Text>
+                    </View>
+                ))}
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>3. Arbitrage Opportunities</Text>
+                <View style={styles.row}>
+                    <Text style={styles.label}>Trans-Atlantic (WTI-{'>'}Brent):</Text>
+                    <Text style={[styles.value, arbData.isOpen ? styles.pnlPositive : styles.pnlNegative]}>
+                        {arbData.isOpen ? 'OPEN' : 'CLOSED'}
+                    </Text>
+                </View>
+                <View style={styles.row}>
+                    <Text style={styles.label}>Est. Margin:</Text>
+                    <Text style={styles.value}>${arbData.margin.toFixed(2)}/bbl</Text>
+                </View>
+            </View>
+
+            <Text style={styles.footer}>
+                Generated by Energy Trading Operations Suite | Confidential
+            </Text>
+        </Page>
+    </Document>
+);

@@ -1,0 +1,6 @@
+Trade ID,Deal Type,Direction,Volume,Commodity,Delivery Month,Price,Counterparty
+1,Physical,Buy,100000,Brent,Dec 25,75.00,Shell
+2,Paper,Sell,50000,Brent,Dec 25,75.50,ICE
+3,Paper,Sell,50000,Brent,Dec 25,75.50,ICE
+4,Physical,Buy,50000,WTI,Jan 26,70.00,BP
+5,Paper,Sell,40000,WTI,Jan 26,70.20,NYMEX
