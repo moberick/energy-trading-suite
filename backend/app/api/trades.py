@@ -27,3 +27,13 @@ async def get_example_position():
         Trade(trade_id="3", deal_type="Paper", direction="Sell", volume=50000, commodity="Brent", delivery_month="Dec 25", price=75.5),
     ]
     return calculate_net_position(trades)
+
+@router.get("/positions", response_model=List[Position])
+async def get_positions():
+    from app.services.data_manager import data_manager
+    from app.services.trade_service import calculate_net_position_from_df
+    
+    df = data_manager.get_trades()
+    if df is None:
+        return []
+    return calculate_net_position_from_df(df)

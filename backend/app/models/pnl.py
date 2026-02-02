@@ -14,3 +14,9 @@ class PnLResult(BaseModel):
     unexplained_pnl: float
     total_calculated_pnl: float
     total_reported_pnl: float
+
+class PnLAttribution(BaseModel):
+    date: str
+    driver: str
+    pnl_value: float
+

@@ -8,14 +8,14 @@ def parse_trades_csv(file_content: bytes) -> List[Trade]:
     trades = []
     for _, row in df.iterrows():
         trade = Trade(
-            trade_id=str(row['Trade ID']),
-            deal_type=row['Deal Type'],
-            direction=row['Direction'],
-            volume=float(row['Volume']),
-            commodity=row['Commodity'],
-            delivery_month=row['Delivery Month'],
-            price=float(row['Price']),
-            counterparty=row.get('Counterparty')
+            trade_id=str(row['trade_id']),
+            deal_type=row['deal_type'],
+            direction=row['direction'],
+            volume=float(row['volume']),
+            commodity=row['commodity'],
+            delivery_month=row['delivery_month'],
+            price=float(row['price']),
+            counterparty=row.get('counterparty')
         )
         trades.append(trade)
     return trades
@@ -23,10 +23,14 @@ def parse_trades_csv(file_content: bytes) -> List[Trade]:
 def calculate_net_position(trades: List[Trade]) -> List[Position]:
     if not trades:
         return []
-
     # Convert to DataFrame for easier aggregation
     data = [t.dict() for t in trades]
     df = pd.DataFrame(data)
+    return calculate_net_position_from_df(df)
+
+def calculate_net_position_from_df(df: pd.DataFrame) -> List[Position]:
+    if df.empty:
+        return []
 
     # Adjust volume based on direction
     df['signed_volume'] = df.apply(

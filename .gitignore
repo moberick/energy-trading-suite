@@ -28,3 +28,7 @@ out/
 # IDEs
 .vscode/
 .idea/
+
+# Other projects - not part of this repo
+smart_network_manager/
+wpsr_tracker/

@@ -3,9 +3,11 @@ from typing import List, Optional
 from datetime import datetime
 
 class CurvePoint(BaseModel):
-    month: str  # "Jan 26"
+    curve_date: str
+    commodity: str
+    tenor: str
     price: float
-    yesterday_price: float
+    yesterday_price: Optional[float] = None
 
 class ValidationAlert(BaseModel):
     month: str
