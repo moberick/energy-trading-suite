@@ -1,0 +1,29 @@
+date,driver,pnl_value
+2025-11-28,Delta (Price),80724.52
+2025-11-28,Theta (Time),9985.44
+2025-11-28,New Deal P&L,28748.68
+2025-11-28,Unexplained/Error,-995.07
+2025-11-29,Delta (Price),88619.82
+2025-11-29,Theta (Time),10307.42
+2025-11-29,New Deal P&L,17436.74
+2025-11-29,Unexplained/Error,20.5
+2025-11-30,Delta (Price),55329.74
+2025-11-30,Theta (Time),11379.32
+2025-11-30,New Deal P&L,13825.27
+2025-11-30,Unexplained/Error,-178.26
+2025-12-01,Delta (Price),-131257.0
+2025-12-01,Theta (Time),17085.87
+2025-12-01,New Deal P&L,21336.7
+2025-12-01,Unexplained/Error,1141.37
+2025-12-02,Delta (Price),-81415.98
+2025-12-02,Theta (Time),13921.33
+2025-12-02,New Deal P&L,21092.33
+2025-12-02,Unexplained/Error,391.75
+2025-12-03,Delta (Price),39811.29
+2025-12-03,Theta (Time),9263.29
+2025-12-03,New Deal P&L,21303.73
+2025-12-03,Unexplained/Error,41.38
+2025-12-04,Delta (Price),172310.81
+2025-12-04,Theta (Time),9914.0
+2025-12-04,New Deal P&L,11565.44
+2025-12-04,Unexplained/Error,1034.58

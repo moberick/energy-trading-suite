@@ -1,0 +1,99 @@
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# ==========================================
+# CONFIGURATION
+# ==========================================
+TODAY = datetime(2025, 12, 4)  # Simulation Date
+COMMODITIES = ["Brent Crude", "WTI Crude", "Diesel 10ppm"]
+TENORS = ["Dec 25", "Jan 26", "Feb 26", "Mar 26", "Apr 26", "May 26"]
+BASE_PRICE = 72.50  # Current approx oil price
+
+# ==========================================
+# 1. GENERATE FORWARD CURVE DATA (Center Panel)
+# ==========================================
+# We will simulate a "Backwardated" curve (Future prices are lower than spot)
+# This is typical for tight markets.
+curve_data = []
+for commodity in COMMODITIES:
+    price = BASE_PRICE + np.random.uniform(-2, 2) # Slight variation per product
+    for i, tenor in enumerate(TENORS):
+        # Backwardation: Price drops by $0.40 per month
+        forward_price = price - (i * 0.40) + np.random.normal(0, 0.05)
+        curve_data.append({
+            "curve_date": TODAY.strftime("%Y-%m-%d"),
+            "commodity": commodity,
+            "tenor": tenor,
+            "price": round(forward_price, 2)
+        })
+
+df_curve = pd.DataFrame(curve_data)
+df_curve.to_csv("forward_curve.csv", index=False)
+print("✅ Generated forward_curve.csv")
+
+# ==========================================
+# 2. GENERATE TRADES DATA (Left Panel)
+# ==========================================
+# We need a mix of Physical (Inventory) and Paper (Hedges)
+# Strategy: Long Physical, Short Paper (Hedging)
+trades = []
+for i in range(50):
+    deal_type = np.random.choice(["Physical", "Paper"], p=[0.4, 0.6])
+    
+    # If Physical, we usually Buy (Long). If Paper, we usually Sell (Short) to hedge.
+    if deal_type == "Physical":
+        direction = "Buy"
+        volume = np.random.choice([10000, 25000, 50000]) # Cargo sizes
+    else:
+        direction = "Sell" 
+        volume = np.random.choice([1000, 5000, 10000]) # Lot sizes (smaller)
+
+    # Random Commodity and Month
+    commodity = np.random.choice(COMMODITIES)
+    month = np.random.choice(TENORS)
+    
+    # Price is close to the curve price for that month
+    base = df_curve[(df_curve['commodity']==commodity) & (df_curve['tenor']==month)]['price'].values[0]
+    trade_price = base + np.random.normal(0, 0.50)
+
+    trades.append({
+        "trade_id": f"TRD-{1000+i}",
+        "deal_type": deal_type,
+        "direction": direction,
+        "volume": volume,
+        "commodity": commodity,
+        "delivery_month": month,
+        "price": round(trade_price, 2)
+    })
+
+df_trades = pd.DataFrame(trades)
+df_trades.to_csv("trades.csv", index=False)
+print("✅ Generated trades.csv")
+
+# ==========================================
+# 3. GENERATE P&L ATTRIBUTION DATA (Right Panel)
+# ==========================================
+# Simulating the last 7 days of P&L
+pnl_data = []
+dates = [TODAY - timedelta(days=x) for x in range(7)]
+dates.reverse()
+
+for date in dates:
+    date_str = date.strftime("%Y-%m-%d")
+    
+    # Delta: Made money on price moves (Random +/-)
+    pnl_data.append({"date": date_str, "driver": "Delta (Price)", "pnl_value": round(np.random.normal(50000, 150000), 2)})
+    
+    # Theta: Made money on Time Decay (Usually positive for short hedges)
+    pnl_data.append({"date": date_str, "driver": "Theta (Time)", "pnl_value": round(np.random.normal(10000, 5000), 2)})
+    
+    # New Deal: P&L from today's trading
+    pnl_data.append({"date": date_str, "driver": "New Deal P&L", "pnl_value": round(np.random.normal(20000, 10000), 2)})
+    
+    # Unexplained: Small noise (important for "Controls" aspect)
+    pnl_data.append({"date": date_str, "driver": "Unexplained/Error", "pnl_value": round(np.random.normal(0, 500), 2)})
+
+df_pnl = pd.DataFrame(pnl_data)
+df_pnl.to_csv("pnl_attribution.csv", index=False)
+print("✅ Generated pnl_attribution.csv")
